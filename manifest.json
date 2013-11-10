@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "iStock Forum Quoter",
+  "description": "Allow easy quoting of various bits of other posts in the iStock forums.",
+  "version": "0.0.1",
+  
+  "icons": { 
+          "128": "quote-icon-1.png" },
+  "content_scripts": [ {
+    "js": [ "jquery-1.9.0.min.js", "theasis_istock_forum_quoter.user.js" ],
+  "matches": [
+    "http://*.istockphoto.com/forum_messages.php*",
+    "https://*.istockphoto.com/forum_messages.php*",
+    "http://*.istockphoto.com/forum_post.php*",
+    "https://*.istockphoto.com/forum_post.php*"
+
+  ] } ]
+}
