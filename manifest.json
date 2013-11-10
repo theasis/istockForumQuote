@@ -3,7 +3,7 @@
 
   "name": "iStock Forum Quoter",
   "description": "Allow easy quoting of various bits of other posts in the iStock forums.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   
   "icons": { 
           "128": "quote-icon-1.png" },

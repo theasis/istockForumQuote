@@ -5,7 +5,7 @@
 // @match          https://*.istockphoto.com/forum_messages.php*
 // @match          http://*.istockphoto.com/forum_post.php*
 // @match          https://*.istockphoto.com/forum_post.php*
-// @version	   0.0.1
+// @version	   0.0.2
 // iStockPhoto greasemonkey script (c) Martin McCarthy 2013
 // ==/UserScript==
 // This script makes it easy to quote bits of other forum posts and do a few other things when *NOT* in WYSIWYG mode
@@ -14,6 +14,10 @@
 // Initial version
 //
 
+function Ex(message) {
+	this.message=message;
+	this.name="Local Exception";
+}
 function main() {
 	if (jQ("#EditorBody_ifr").length>0) {
 		// WYSIWYG mode. Ew!! Abandon ship!
@@ -23,14 +27,29 @@ function main() {
 	var textArea=jQ("#EditorBody");
 	setupPage=function() {
 		var form=jQ("#ForumMultisitePostForm");
-		jQ("<input type='submit' class='forumSubmitButton' id='theasisForumQuote' value='Colour'>").click(function(){insertSpecial("colour");}).insertAfter(form);
-		jQ("<input type='submit' class='forumSubmitButton' id='theasisForumQuote' value=']'>").click(function(){insertSpecial("]");}).insertAfter(form);
-		jQ("<input type='submit' class='forumSubmitButton' id='theasisForumQuote' value='['>").click(function(){insertSpecial("[");}).insertAfter(form);
-		jQ("<input type='submit' class='forumSubmitButton' id='theasisForumQuote' value='Quote'>").click(function(){quoteSelectedText();}).insertAfter(form);
+		addButton("Colour",form,"theasisForumColorTag","colour");
+		addButton("]",form,"theasisForumRightBracket");
+		addButton("[",form,"theasisForumLeftBracket");
+		addButton("Quote",form,"theasisForumQuote",quoteSelectedText);
 	};
-	
+	addButton=function(value,target,id,spesh) {
+		var speshFn=spesh;
+		switch(typeof spesh) {
+			case "undefined":
+				speshFn=function(){insertSpecial(value);};
+				break;
+			case "string":
+				speshFn=function(){insertSpecial(spesh);};
+				break;
+		}
+		var idAttr=id?" id='"+id+"' ":"";
+		if (value && target) {
+			jQ("<input type='submit' class='forumSubmitButton'"+idAttr+"value='"+value+"'>").click(speshFn).insertAfter(target);
+		} else {
+			throw new Ex("Invalid button data");
+		}
+	};
 	insertSpecial=function(spesh) {
-		
 		switch(spesh) {
 		case '[':
 			textArea.append("&amp;#91;");
@@ -46,7 +65,6 @@ function main() {
 	quoteSelectedText=function() {
 		textArea.append("[quote]" + getSelectionHtml() + "[/quote]\n");
 	};
-
 	getSelectionHtml=function() {
 		var html = "";
 		if (typeof window.getSelection != "undefined") {
